@@ -39,7 +39,7 @@ To design, implement, and test a relational database for a bookstore business op
 ## How to Run
 1. Run `create_database.sql`
 2. Run `create_tables.sql`
-3. Run `insert_sample_data.sql`
+3. Run `add_records.sql`
 4. Run `create_users_roles.sql`
 5. Test with `test_queries.sql`
 
