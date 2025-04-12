@@ -45,8 +45,8 @@ To design, implement, and test a relational database for a bookstore business op
 
 
 ## Authors
-Nhlawuleko Ntimbani
-Malebogo Sebolai
-Tshimoloho Hlapane
+- Nhlawuleko Ntimbani
+- Malebogo Sebolai
+- Tshimoloho Hlapane
 
 
