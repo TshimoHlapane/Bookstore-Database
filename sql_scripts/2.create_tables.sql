@@ -1,7 +1,7 @@
--- 1️⃣ Select the database
+-- Select the database
 USE bookstore_db;
 
--- 2️⃣ Reference Tables First (no dependencies)
+-- Reference Tables First (no dependencies)
 
 CREATE TABLE book_language (
     language_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -39,7 +39,7 @@ CREATE TABLE order_status (
     status_name VARCHAR(50) NOT NULL
 );
 
--- 3️⃣ Main Tables (with dependencies)
+-- Main Tables (with dependencies)
 
 CREATE TABLE book (
     book_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -80,7 +80,7 @@ CREATE TABLE customer_address (
     FOREIGN KEY (address_status_id) REFERENCES address_status(address_status_id)
 );
 
--- 4️⃣ Join/Relationship Tables
+-- Join/Relationship Tables
 
 CREATE TABLE book_author (
     book_id INT,
@@ -90,7 +90,7 @@ CREATE TABLE book_author (
     FOREIGN KEY (author_id) REFERENCES author(author_id)
 );
 
--- 5️⃣ Orders and Related Tables
+-- Orders and Related Tables
 
 CREATE TABLE cust_order (
     order_id INT PRIMARY KEY AUTO_INCREMENT,
