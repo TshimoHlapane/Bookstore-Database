@@ -1,35 +1,87 @@
--- 1. Author table
-CREATE TABLE author (
-    author_id INT PRIMARY KEY,
-    name VARCHAR(255),
-    bio TEXT
+-- 1️⃣ Select the database
+USE bookstore_db;
+
+-- 2️⃣ Reference Tables First (no dependencies)
+
+CREATE TABLE book_language (
+    language_id INT PRIMARY KEY AUTO_INCREMENT,
+    language_name VARCHAR(50) NOT NULL
 );
 
--- 2. Publisher table
 CREATE TABLE publisher (
-    publisher_id INT PRIMARY KEY,
-    name VARCHAR(255),
-    address TEXT
+    publisher_id INT PRIMARY KEY AUTO_INCREMENT,
+    publisher_name VARCHAR(100) NOT NULL
 );
 
--- 3. Book table
+CREATE TABLE author (
+    author_id INT PRIMARY KEY AUTO_INCREMENT,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE country (
+    country_id INT PRIMARY KEY AUTO_INCREMENT,
+    country_name VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE address_status (
+    address_status_id INT PRIMARY KEY AUTO_INCREMENT,
+    status_name VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE shipping_method (
+    shipping_method_id INT PRIMARY KEY AUTO_INCREMENT,
+    method_name VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE order_status (
+    order_status_id INT PRIMARY KEY AUTO_INCREMENT,
+    status_name VARCHAR(50) NOT NULL
+);
+
+-- 3️⃣ Main Tables (with dependencies)
+
 CREATE TABLE book (
-    book_id INT PRIMARY KEY,
-    title VARCHAR(255),
+    book_id INT PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(255) NOT NULL,
+    isbn VARCHAR(20),
+    publication_year YEAR,
+    price DECIMAL(10, 2),
     publisher_id INT,
     language_id INT,
     FOREIGN KEY (publisher_id) REFERENCES publisher(publisher_id),
     FOREIGN KEY (language_id) REFERENCES book_language(language_id)
 );
 
--- 4. Book Language table
-CREATE TABLE book_language (
-    language_id INT PRIMARY KEY,
-    language_code VARCHAR(10),
-    language_name VARCHAR(100)
+CREATE TABLE customer (
+    customer_id INT PRIMARY KEY AUTO_INCREMENT,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    email VARCHAR(100),
+    phone VARCHAR(20)
 );
 
--- 5. Book_Author junction table (Many-to-Many)
+CREATE TABLE address (
+    address_id INT PRIMARY KEY AUTO_INCREMENT,
+    address_line VARCHAR(255) NOT NULL,
+    city VARCHAR(100),
+    postal_code VARCHAR(20),
+    country_id INT,
+    FOREIGN KEY (country_id) REFERENCES country(country_id)
+);
+
+CREATE TABLE customer_address (
+    customer_id INT,
+    address_id INT,
+    address_status_id INT,
+    PRIMARY KEY (customer_id, address_id),
+    FOREIGN KEY (customer_id) REFERENCES customer(customer_id),
+    FOREIGN KEY (address_id) REFERENCES address(address_id),
+    FOREIGN KEY (address_status_id) REFERENCES address_status(address_status_id)
+);
+
+-- 4️⃣ Join/Relationship Tables
+
 CREATE TABLE book_author (
     book_id INT,
     author_id INT,
@@ -38,89 +90,33 @@ CREATE TABLE book_author (
     FOREIGN KEY (author_id) REFERENCES author(author_id)
 );
 
--- 6. Customer table
-CREATE TABLE customer (
-    customer_id INT PRIMARY KEY,
-    name VARCHAR(255),
-    email VARCHAR(255)
-);
+-- 5️⃣ Orders and Related Tables
 
--- 7. Address table
-CREATE TABLE address (
-    address_id INT PRIMARY KEY,
-    street VARCHAR(255),
-    city VARCHAR(100),
-    postal_code VARCHAR(20),
-    country_id INT,
-    FOREIGN KEY (country_id) REFERENCES country(country_id)
-);
-
--- 8. Country table
-CREATE TABLE country (
-    country_id INT PRIMARY KEY,
-    country_name VARCHAR(100),
-    country_code VARCHAR(10)
-);
-
--- 9. Address Status table
-CREATE TABLE address_status (
-    status_id INT PRIMARY KEY,
-    status_description VARCHAR(100)
-);
-
--- 10. Customer Address table
-CREATE TABLE customer_address (
-    customer_id INT,
-    address_id INT,
-    status_id INT,
-    PRIMARY KEY (customer_id, address_id),
-    FOREIGN KEY (customer_id) REFERENCES customer(customer_id),
-    FOREIGN KEY (address_id) REFERENCES address(address_id),
-    FOREIGN KEY (status_id) REFERENCES address_status(status_id)
-);
-
--- 11. Shipping Method table
-CREATE TABLE shipping_method (
-    method_id INT PRIMARY KEY,
-    method_name VARCHAR(100),
-    cost DECIMAL(10,2)
-);
-
--- 12. Order Status table
-CREATE TABLE order_status (
-    status_id INT PRIMARY KEY,
-    status_description VARCHAR(100)
-);
-
--- 13. Cust_Order table (main order table)
 CREATE TABLE cust_order (
-    order_id INT PRIMARY KEY,
+    order_id INT PRIMARY KEY AUTO_INCREMENT,
     customer_id INT,
-    status_id INT,
+    order_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    order_status_id INT,
     shipping_method_id INT,
-    order_date DATE,
     FOREIGN KEY (customer_id) REFERENCES customer(customer_id),
-    FOREIGN KEY (status_id) REFERENCES order_status(status_id),
-    FOREIGN KEY (shipping_method_id) REFERENCES shipping_method(method_id)
+    FOREIGN KEY (order_status_id) REFERENCES order_status(order_status_id),
+    FOREIGN KEY (shipping_method_id) REFERENCES shipping_method(shipping_method_id)
 );
 
--- 14. Order Line table (Items in order)
 CREATE TABLE order_line (
-    line_id INT PRIMARY KEY,
     order_id INT,
     book_id INT,
-    quantity INT,
-    price DECIMAL(10,2),
+    quantity INT NOT NULL,
+    PRIMARY KEY (order_id, book_id),
     FOREIGN KEY (order_id) REFERENCES cust_order(order_id),
     FOREIGN KEY (book_id) REFERENCES book(book_id)
 );
 
--- 15. Order History table
 CREATE TABLE order_history (
-    history_id INT PRIMARY KEY,
+    order_history_id INT PRIMARY KEY AUTO_INCREMENT,
     order_id INT,
-    status_id INT,
-    changed_at TIMESTAMP,
+    order_status_id INT,
+    status_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (order_id) REFERENCES cust_order(order_id),
-    FOREIGN KEY (status_id) REFERENCES order_status(status_id)
+    FOREIGN KEY (order_status_id) REFERENCES order_status(order_status_id)
 );
